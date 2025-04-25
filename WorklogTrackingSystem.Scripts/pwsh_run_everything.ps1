@@ -121,7 +121,7 @@ function Invoke-RunProductionEnvironment {
     # Build Frontend
     try {
         Write-Host "Building Frontend for production..."
-        Start-Process -FilePath "cmd.exe" -ArgumentList "/c npm run build" -WorkingDirectory $FullFrontEndPath -NoNewWindow -Wait
+        Start-Process -FilePath "cmd.exe" -ArgumentList "/c npm i && npm run build" -WorkingDirectory $FullFrontEndPath -NoNewWindow -Wait
         Write-Success "Frontend build completed successfully."
     } catch {
         Write-ErrorMsg "Failed to build Frontend: $($_.Exception.Message)"

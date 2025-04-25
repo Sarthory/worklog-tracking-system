@@ -95,7 +95,7 @@ function run_production_environment() {
     API_PROCESS_PID=$!
     write_success "API server started (PID: $API_PROCESS_PID)."
     echo "Building Frontend for production..."
-    (cd "$FRONTEND_FOLDER" && npm run build)
+    (cd "$FRONTEND_FOLDER" && npm i && npm run build)
     if [[ $? -ne 0 ]]; then
         write_error "Frontend build failed."
         return
