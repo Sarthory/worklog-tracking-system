@@ -3,13 +3,13 @@ using WorklogTrackingSystem.Application.Interfaces;
 using WorklogTrackingSystem.Domain.DTOs;
 using WorklogTrackingSystem.Domain.Entities;
 using WorklogTrackingSystem.Domain.Enums;
-using WorklogTrackingSystem.Infrastructure.Data;
+using WorklogTrackingSystem.Infrastructure.Interfaces;
 
 namespace WorklogTrackingSystem.Infrastructure.Services
 {
-    public class WorklogService(UserDbContext context) : IWorklogService
+    public class WorklogService(IDbContext context) : IWorklogService
     {
-        private readonly UserDbContext _context = context;
+        private readonly IDbContext _context = context;
 
         public async Task<Worklog?> InsertAsync(WorklogDto worklog)
         {

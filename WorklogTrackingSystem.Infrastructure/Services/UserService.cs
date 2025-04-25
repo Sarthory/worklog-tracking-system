@@ -1,17 +1,16 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using WorklogTrackingSystem.Application.Interfaces;
 using WorklogTrackingSystem.Domain.DTOs;
 using WorklogTrackingSystem.Domain.Entities;
 using WorklogTrackingSystem.Domain.Enums;
-using WorklogTrackingSystem.Infrastructure.Data;
+using WorklogTrackingSystem.Infrastructure.Interfaces;
 
 namespace WorklogTrackingSystem.Infrastructure.Services
 {
-    public class UserService(UserDbContext context) : IUserService
+    public class UserService(IDbContext context) : IUserService
     {
-        private readonly UserDbContext _context = context;
+        private readonly IDbContext _context = context;
 
         public Task<User?> GetByIdAsync(int id)
         {

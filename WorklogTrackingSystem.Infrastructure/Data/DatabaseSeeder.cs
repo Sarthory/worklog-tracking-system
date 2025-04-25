@@ -1,14 +1,20 @@
+using Microsoft.EntityFrameworkCore;
 using WorklogTrackingSystem.Domain.Entities;
 using WorklogTrackingSystem.Domain.Enums;
+using WorklogTrackingSystem.Infrastructure.Interfaces;
 
 namespace WorklogTrackingSystem.Infrastructure.Data
 {
-    public static class DatabaseSeeder
+    public class DatabaseSeeder(IDbContext context)
     {
-        public static void SeedUsers(UserDbContext context)
+        private readonly IDbContext _context = context;
+
+        public async Task SeedUsers()
         {
-            if (!context.Users.Any())
+            if (!await _context.Users.AnyAsync())
             {
+                Console.WriteLine("********** Seeding database...");
+
                 var firstNames = new[]
                 {
                     "John", "Jane", "Michael", "Emily", "Chris", "Sarah", "David", "Laura", "James", "Anna",
@@ -42,8 +48,8 @@ namespace WorklogTrackingSystem.Infrastructure.Data
                     RefreshTokenExpiryTime = null
                 };
 
-                context.Users.Add(adminUser);
-                context.SaveChanges();
+                _context.Users.Add(adminUser);
+                await _context.SaveChangesAsync();
 
                 var users = Enumerable.Range(1, 10000).Select(i => new User
                 {
@@ -58,10 +64,14 @@ namespace WorklogTrackingSystem.Infrastructure.Data
                     RefreshTokenExpiryTime = null
                 }).ToList();
 
-                context.Users.AddRange(users);
-                context.SaveChanges();
+                _context.Users.AddRange(users);
+
+                Console.WriteLine("********** Saving seeded users...");
+                await _context.SaveChangesAsync();
+                Console.WriteLine("********** Users saved.");
 
                 // Generate worklogs for each user
+                Console.WriteLine("********** Generating worklogs...");
                 var worklogs = users.SelectMany(user =>
                 {
                     var worklogDates = Enumerable.Range(0, (DateTime.Now - new DateTime(2025, 4, 1)).Days + 1)
@@ -84,8 +94,11 @@ namespace WorklogTrackingSystem.Infrastructure.Data
                     });
                 }).ToList();
 
-                context.Worklogs.AddRange(worklogs);
-                context.SaveChanges();
+                _context.Worklogs.AddRange(worklogs);
+
+                Console.WriteLine("********** Saving seeded worklogs...");
+                await _context.SaveChangesAsync();
+                Console.WriteLine($"********** Worklogs saved. Seeding completed. Total users: {users.Count}, Total worklogs: {worklogs.Count}.");
             }
         }
     }

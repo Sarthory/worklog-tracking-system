@@ -2,39 +2,56 @@ using WorklogTrackingSystem.Application.Interfaces;
 using WorklogTrackingSystem.Infrastructure.Data;
 using WorklogTrackingSystem.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using WorklogTrackingSystem.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+var allowOrigins = "_allowDevelopmentOrigins";
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
+    options.AddPolicy(name: allowOrigins,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:5000", "https://localhost:5000")
+                                .AllowAnyHeader()
+                                .AllowAnyMethod()
+                                .AllowCredentials();
+                      });
 });
-
-var databaseSettings = new DatabaseSettings();
-builder.Configuration.GetSection("DatabaseSettings").Bind(databaseSettings);
-builder.Services.AddSingleton(databaseSettings);
 
 // Configure DbContext based on environment
 if (builder.Environment.IsDevelopment())
 {
-    builder.Services.AddDbContext<UserDbContext>(options =>
-        options.UseSqlite(builder.Configuration.GetConnectionString("SQLiteConnection")));
+    Console.WriteLine("INFO: Configuring DbContext for Development (SQLite)");
+    builder.Services.AddDbContext<SqliteDbContext>(options =>
+        options.UseSqlite(
+            builder.Configuration.GetConnectionString("SQLiteConnection"),
+            // Specify migrations assembly IF NEEDED (often not if context is in same assembly)
+            // but more importantly, tell it where the MigrationsHistoryTable lives for THIS context
+            sqlOptions => sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory_Sqlite")
+        ));
+    // Register SqliteUserDbContext AS IUserDbContext for DI
+    builder.Services.AddScoped<IDbContext>(provider => provider.GetRequiredService<SqliteDbContext>());
 }
 else
 {
-    builder.Services.AddDbContext<UserDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("SQLServerConnection")));
+    Console.WriteLine("INFO: Configuring DbContext for Production (SQL Server)");
+    builder.Services.AddDbContext<SqlServerDbContext>(options =>
+        options.UseSqlServer(
+            builder.Configuration.GetConnectionString("SQLServerConnection"),
+            // Specify migrations assembly IF NEEDED
+            // and specify a separate history table name
+            sqlOptions => sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory_SqlServer")
+        ));
+    // Register SqlServerUserDbContext AS IUserDbContext for DI
+    builder.Services.AddScoped<IDbContext>(provider => provider.GetRequiredService<SqlServerDbContext>());
 }
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -63,8 +80,18 @@ var app = builder.Build();
 // Seed the database with initial 10000 Users and their Worklogs
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
-    DatabaseSeeder.SeedUsers(dbContext);
+    if (app.Environment.IsDevelopment())
+    {
+        var sqliteContext = scope.ServiceProvider.GetRequiredService<SqliteDbContext>();
+        var databaseSeeder = new DatabaseSeeder(sqliteContext);
+        await databaseSeeder.SeedUsers();
+    }
+    else
+    {
+        var sqlServerContext = scope.ServiceProvider.GetRequiredService<SqlServerDbContext>();
+        var databaseSeeder = new DatabaseSeeder(sqlServerContext);
+        await databaseSeeder.SeedUsers();
+    }
 }
 
 if (app.Environment.IsDevelopment())
@@ -72,9 +99,13 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+else
+{
+    app.UseHsts();
+}
 
 app.UseHttpsRedirection();
-app.UseCors();
+app.UseCors(allowOrigins);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

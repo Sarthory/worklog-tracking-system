@@ -1,16 +1,16 @@
 using WorklogTrackingSystem.Application.Interfaces;
 using WorklogTrackingSystem.Domain.Entities;
 using WorklogTrackingSystem.Domain.DTOs;
-using WorklogTrackingSystem.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using WorklogTrackingSystem.Infrastructure.Interfaces;
 
 namespace WorklogTrackingSystem.Infrastructure.Services
 {
-    public class AuthService(UserDbContext context, IConfiguration configuration) : IAuthService
+    public class AuthService(IDbContext context, IConfiguration configuration) : IAuthService
     {
-        private readonly UserDbContext _context = context;
+        private readonly IDbContext _context = context;
         private readonly TokenService _tokenService = new(context, configuration);
 
         public async Task<TokenResponseDto?> LoginAsync(UserLoginDto userLogin)

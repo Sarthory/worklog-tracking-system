@@ -1,6 +1,5 @@
 using WorklogTrackingSystem.Domain.Entities;
 using WorklogTrackingSystem.Domain.DTOs;
-using WorklogTrackingSystem.Infrastructure.Data;
 using WorklogTrackingSystem.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -8,12 +7,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using WorklogTrackingSystem.Infrastructure.Interfaces;
 
 namespace WorklogTrackingSystem.Infrastructure.Services
 {
-    public class TokenService(UserDbContext context, IConfiguration configuration) : ITokenService
+    public class TokenService(IDbContext context, IConfiguration configuration) : ITokenService
     {
-        private readonly UserDbContext _context = context;
+        private readonly IDbContext _context = context;
         private readonly IConfiguration _configuration = configuration;
 
         public async Task<TokenResponseDto> CreateTokenResponse(User user)
@@ -28,7 +28,7 @@ namespace WorklogTrackingSystem.Infrastructure.Services
         public async Task<User?> ValidateRefreshTokenAsync(int userId, string refreshToken)
         {
             var user = await _context.Users.FindAsync(userId);
-            
+
             if (user is null ||
                 user.RefreshToken != refreshToken ||
                 user.RefreshTokenExpiryTime <= DateTime.UtcNow)
@@ -83,4 +83,4 @@ namespace WorklogTrackingSystem.Infrastructure.Services
             return refreshToken;
         }
     }
-} 
+}
