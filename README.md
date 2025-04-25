@@ -20,8 +20,8 @@ These instructions will get you a copy of the project up and running on your loc
 
 - .NET 9+
 - Node.js 18+
-- Docker (optional, for data)
-- Database MSSQL 2022
+- Docker (optional)
+- Database MSSQL 2022 (for production env)
 
 ## Running the Project in Development mode
 
