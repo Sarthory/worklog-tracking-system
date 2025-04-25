@@ -87,6 +87,26 @@ Change working directory to the Scripts folder _(your_project_path/worklog-track
 
 The API and Front will start, and a browser window should pop up, loading the frontend.
 
+## Logging In and Using this Software
+
+On the first execution, for both environments, the database will be seeded with 10000 users and their Worklog entries.
+
+From these 10000 users, only 1 will be created with Admin role, and the rest with User role.
+
+## All the seeded users have the same password: **1234**
+
+- Logging in as Admin
+  - Login: admin
+  - Password: 1234
+
+---
+
+- Logging in as User
+  - Login: _user(number from 2 to 10000)_ Ex.: user1000
+  - Password: 1234
+
+---
+
 ## Contact
 
 **Felipe Sartori** - felipe@sartori.app

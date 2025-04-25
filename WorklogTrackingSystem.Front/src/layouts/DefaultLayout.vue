@@ -1,29 +1,3 @@
-<!-- <template>
-  <div class="layout">
-    <header class="header">
-      <div class="header-content">
-        <h1>Worklog Tracking System</h1>
-        <button @click="logout" class="logout-button">Logout</button>
-      </div>
-    </header>
-    <div class="main-content">
-      <nav class="sidebar">
-        <router-link to="/" class="nav-link"> Dashboard </router-link>
-
-        <router-link v-if="authStore.user.role === Role.Admin" to="/admin" class="nav-link">
-          Admin
-        </router-link>
-
-        <router-link v-if="authStore.user.role === Role.User" to="/user" class="nav-link">
-          User
-        </router-link>
-      </nav>
-      <main class="content">
-        <router-view />
-      </main>
-    </div>
-  </div>
-</template> -->
 <template>
   <v-layout>
     <v-navigation-drawer expand-on-hover rail v-model="drawer">

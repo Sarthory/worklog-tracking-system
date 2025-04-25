@@ -72,7 +72,7 @@ function Invoke-RunDevelopmentEnvironment {
     # Start Frontend dev server
     try {
         Write-Host "Starting Frontend dev server..."
-        $FrontendProcess = Start-Process -FilePath "cmd.exe" -ArgumentList "/c npm run dev" -WorkingDirectory $FullFrontEndPath -PassThru
+        $FrontendProcess = Start-Process -FilePath "cmd.exe" -ArgumentList "/c npm i && npm run dev" -WorkingDirectory $FullFrontEndPath -PassThru
         Write-Success "Frontend dev server started (PID: $($FrontendProcess.Id))."
     } catch {
         Write-ErrorMsg "Failed to start Frontend dev server: $($_.Exception.Message)"

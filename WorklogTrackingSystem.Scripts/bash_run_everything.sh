@@ -71,7 +71,7 @@ function run_development_environment() {
     API_PROCESS_PID=$!
     write_success "API server started (PID: $API_PROCESS_PID)."
     echo "Starting Frontend dev server..."
-    (cd "$FRONTEND_FOLDER" && npm run dev) &
+    (cd "$FRONTEND_FOLDER" && npm i && npm run dev) &
     FRONTEND_PROCESS_PID=$!
     write_success "Frontend dev server started (PID: $FRONTEND_PROCESS_PID)."
     echo "Waiting 5 seconds for servers to initialize..."
