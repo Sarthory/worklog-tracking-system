@@ -26,18 +26,14 @@ builder.Services.AddCors(options =>
                       });
 });
 
-// Configure DbContext based on environment
 if (builder.Environment.IsDevelopment())
 {
     Console.WriteLine("INFO: Configuring DbContext for Development (SQLite)");
     builder.Services.AddDbContext<SqliteDbContext>(options =>
         options.UseSqlite(
-            builder.Configuration.GetConnectionString("SQLiteConnection"),
-            // Specify migrations assembly IF NEEDED (often not if context is in same assembly)
-            // but more importantly, tell it where the MigrationsHistoryTable lives for THIS context
+            builder.Configuration.GetConnectionString("SQLiteConnection"),            
             sqlOptions => sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory_Sqlite")
         ));
-    // Register SqliteUserDbContext AS IUserDbContext for DI
     builder.Services.AddScoped<IDbContext>(provider => provider.GetRequiredService<SqliteDbContext>());
 }
 else
@@ -46,11 +42,8 @@ else
     builder.Services.AddDbContext<SqlServerDbContext>(options =>
         options.UseSqlServer(
             builder.Configuration.GetConnectionString("SQLServerConnection"),
-            // Specify migrations assembly IF NEEDED
-            // and specify a separate history table name
             sqlOptions => sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory_SqlServer")
         ));
-    // Register SqlServerUserDbContext AS IUserDbContext for DI
     builder.Services.AddScoped<IDbContext>(provider => provider.GetRequiredService<SqlServerDbContext>());
 }
 
