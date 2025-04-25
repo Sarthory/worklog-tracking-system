@@ -12,12 +12,12 @@ namespace WorklogTrackingSystem.Infrastructure.Configuration
 
             builder.Property(e => e.FirstName).IsRequired();
             builder.Property(e => e.LastName).IsRequired();
-            builder.Property(e => e.Login).IsRequired(); // Consider adding HasIndex().IsUnique() if needed
+            builder.Property(e => e.Login).IsRequired();
             builder.Property(e => e.PasswordHash).IsRequired();
             builder.Property(e => e.Role).IsRequired();
             builder.Property(e => e.DailyMinHours).IsRequired();
             builder.Property(e => e.DailyMaxHours).IsRequired();
-            builder.Property(e => e.RefreshToken).IsRequired(false); // Explicitly optional
+            builder.Property(e => e.RefreshToken).IsRequired(false);
             builder.Property(e => e.RefreshTokenExpiryTime).IsRequired(false);
         }
     }

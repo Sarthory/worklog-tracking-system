@@ -35,7 +35,6 @@ const props = defineProps({
             variant="plain"
             @click="$emit('delete', item.id)"
           />
-          &nbsp;
           <v-btn
             v-tooltip:start="'Edit Entry'"
             density="comfortable"
