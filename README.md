@@ -51,6 +51,8 @@ Navigate to the Scripts folder _(your_project_path/worklog-tracking-system/Workl
 
 The API and Front will start, and a browser window should pop up, loading the frontend.
 
+###### 💡 Note: To see the API documentation, which's only availabe on Development mode, you can access https://localhost:5002/scalar/v1 when the API is running.
+
 ## Running the Project in Production mode
 
 Clone this repository in your local machine.
